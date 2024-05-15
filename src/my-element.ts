@@ -1,13 +1,13 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {WebSocketComponent} from './websocket-component.js';
 
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
+declare global {
+  interface HTMLElementTagNameMap {
+    'websocket-component': WebSocketComponent;
+  }
+}
+
 @customElement('my-element')
 export class MyElement extends LitElement {
   static override styles = css`
@@ -33,24 +33,46 @@ export class MyElement extends LitElement {
     }
   `;
 
-  /**
-   * The name to say "Hello" to.
-   */
-  @property()
-  name = 'World';
+  @property({type: Array})
+  messages: Number[] = [];
 
-  /**
-   * The number of times the button has been clicked.
-   */
-  @property({type: Number})
-  count = 0;
+  private socket: WebSocket | null = null;
+
+  override firstUpdated() {
+    this.connectWebSocket();
+  }
+
+  connectWebSocket() {
+    this.socket = new WebSocket('ws://localhost:3000');
+
+    this.socket.onopen = () => {
+      console.log('WebSocket connection established');
+      // Request initial data from the server when the connection is established
+      this.socket?.send('initialData');
+    };
+
+    this.socket.onmessage = (event) => {
+      // change event object data from string to array
+      this.messages = JSON.parse(event.data);
+      console.log(this.messages);
+      // Update the component to trigger re-rendering
+      this.requestUpdate();
+    };
+
+    this.socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+  }
 
   override render() {
     return html`
       <h1>VOLTMETER</h1>
+      <!-- <websocket-component></websocket-component> -->
+      ${this.messages.map((message) => html`<p>${message}</p>`)}
+
       <meter
-        value="0.5"
-        max="1.0"
+        value=${this.messages[0]}
+        max="2.0"
         min="0.0"
         value="0.5"
         high=".75"
@@ -59,7 +81,6 @@ export class MyElement extends LitElement {
       ></meter>
     `;
   }
-
 }
 
 declare global {

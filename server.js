@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
         const socket = new WebSocket('ws://localhost:3000');
 
         socket.onopen = () => {
-          console.log('WebSocket connection established');
+          console.log('WebSocket test connection established');
         };
 
         socket.onmessage = (event) => {
@@ -44,8 +44,8 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify(data));
   };
 
-  const averageValue = 1.5; // Average value
-  const fluctuationRange = 0.1; // Range of fluctuation
+  const averageValue = 0.5; // Average value
+  const fluctuationRange = 0.3; // Range of fluctuation
 
   // Function to generate an array with random values between 0 and 1.00
   const generateFluctuatingArray = (averageValue, fluctuationRange) => {
@@ -53,8 +53,9 @@ wss.on('connection', (ws) => {
 
     const randomFluctuation =
       Math.random() * fluctuationRange * 2 - fluctuationRange; // Generate random fluctuation within the specified range
-    const value = averageValue + randomFluctuation; // Add random fluctuation average value
+    const value = parseFloat((averageValue + randomFluctuation).toFixed(2)); // Add random fluctuation average value
     fluctuatingArray.push(value);
+    // fluctuatingArray.push(value * 2); //PP
 
     return fluctuatingArray;
   };
@@ -62,7 +63,7 @@ wss.on('connection', (ws) => {
   const interval = setInterval(sendData, 1000);
 
   ws.on('message', (message) => {
-    console.log('ws message:', message + '\n');
+    console.log('Received message:', message + '\n');
   });
 
   ws.on('close', () => {
