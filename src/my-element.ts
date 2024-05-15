@@ -1,9 +1,3 @@
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
@@ -23,6 +17,20 @@ export class MyElement extends LitElement {
       padding: 16px;
       max-width: 800px;
     }
+
+    body {
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    svg path {
+      will-change: auto;
+      stroke-width: 20px;
+      stroke-miterlimit: round;
+      transition: stroke-dashoffset 850ms ease-in-out;
+    }
   `;
 
   /**
@@ -39,26 +47,19 @@ export class MyElement extends LitElement {
 
   override render() {
     return html`
-      <h1>${this.sayHello(this.name)}!</h1>
-      <button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>
-      <slot></slot>
+      <h1>VOLTMETER</h1>
+      <meter
+        value="0.5"
+        max="1.0"
+        min="0.0"
+        value="0.5"
+        high=".75"
+        low=".25"
+        optimum="0.5"
+      ></meter>
     `;
   }
 
-  private _onClick() {
-    this.count++;
-    this.dispatchEvent(new CustomEvent('count-changed'));
-  }
-
-  /**
-   * Formats a greeting
-   * @param name The name to say "Hello" to
-   */
-  sayHello(name: string): string {
-    return `Hello, ${name}`;
-  }
 }
 
 declare global {
