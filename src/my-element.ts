@@ -1,10 +1,13 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {WebSocketComponent} from './websocket-component.js';
+import {WebSocketElement} from './websocket-element';
+import {GaugeElement} from './gauge-element';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'websocket-component': WebSocketComponent;
+    'websocket-element': WebSocketElement;
+    'gauge-element': GaugeElement;
+    'my-element': MyElement;
   }
 }
 
@@ -55,6 +58,13 @@ export class MyElement extends LitElement {
       // change event object data from string to array
       this.messages = JSON.parse(event.data);
       console.log(this.messages);
+
+      if (this.messages.length > 0) {
+        const gaugeElement = this.renderRoot.querySelector(
+          'gauge-element'
+        ) as GaugeElement;
+        gaugeElement.gaugeValue = Number(this.messages[0].valueOf());
+      }
       // Update the component to trigger re-rendering
       this.requestUpdate();
     };
@@ -65,20 +75,21 @@ export class MyElement extends LitElement {
   }
 
   override render() {
+    const gaugeValue = this.messages.length > 0 ? this.messages[0].valueOf() : 0;
     return html`
       <h1>VOLTMETER</h1>
-      <!-- <websocket-component></websocket-component> -->
+      <!-- <websocket-element></websocket-element> -->
       ${this.messages.map((message) => html`<p>${message}</p>`)}
 
       <meter
-        value=${this.messages[0]}
-        max="2.0"
-        min="0.0"
-        value="0.5"
-        high=".75"
-        low=".25"
-        optimum="0.5"
+      value=${this.messages[0]}
+      max="2.0"
+      min="0.0"
+      high=".75"
+      low=".25"
+      optimum="0.5"
       ></meter>
+      <gauge-element gaugeValue="${gaugeValue}"></gauge-element>
     `;
   }
 }
