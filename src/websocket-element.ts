@@ -7,34 +7,48 @@ export class WebSocketElement extends LitElement {
     /* Add your component styles here */
   `;
 
-  @property({type: Array})
-  messages: string[] = [];
+@property({type: Array})
+messages: number[] = [];
 
-  override connectedCallback() {
-    super.connectedCallback();
+private socket: WebSocket | null = null;
+
+  // override connectedCallback() {
+  //   super.connectedCallback();
+  //   this.connectWebSocket();
+  // }
+
+  override firstUpdated() {
     this.connectWebSocket();
   }
-
+  
   connectWebSocket() {
-    const socket = new WebSocket('ws://localhost:3000');
+    this.socket = new WebSocket('ws://localhost:3000');
 
-    socket.onopen = () => {
+    this.socket.onopen = () => {
       console.log('WebSocket connection established');
+      // Request initial data from the server
+      this.socket?.send('initialData');
     };
 
-    socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      this.messages = [...this.messages, message];
+    this.socket.onmessage = (event) => {
+      // change event object data from string to array
+      this.messages = JSON.parse(event.data);
+      this.dispatchEvent(new CustomEvent('message-received', { detail: this.messages }));
+
+      console.log('Received messages: ', this.messages);
+
+      // Update the component to trigger re-rendering
+      this.requestUpdate();
     };
 
-    socket.onclose = () => {
+    this.socket.onclose = () => {
       console.log('WebSocket connection closed');
     };
   }
 
   override render() {
     return html`
-      <div>${this.messages.map((message) => html`<p>${message}</p>`)}</div>
+      <!-- ${this.messages.map((message) => html`<p>${message}</p>`)} -->
     `;
   }
 }
