@@ -15,22 +15,21 @@ export class GaugeElement extends LitElement {
 
   static override styles = css`
     :host {
-      --gauge-value: 0; /* Default value */
+      --gauge-value: 0deg; /* Default value */
     }
     .gauge {
       height: 85px;
-      /*overflow: hidden;*/
+      overflow: hidden;
       position: relative;
       width: 170px;
     }
-
     .gauge .arc {
-      background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%),
-        conic-gradient(
-          orange 0,
-          orange var(--gauge-value),
-          #ccc var(--gauge-value),
-          #ccc 180deg,
+      background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%), /* inner circle */
+        conic-gradient( /* meter arc */
+          #f09605 0,
+          #f09605 var(--gauge-value),
+          #ddd var(--gauge-value),
+          #ddd 180deg,
           #fff 180deg,
           #fff 360deg
         );
@@ -68,8 +67,7 @@ export class GaugeElement extends LitElement {
     }
     .gauge .label {
       bottom: 20px;
-      font-size: 16px;
-      font-weight: 700;
+      font-family: Arial, sans-serif;
       left: 0;
       line-height: 26px;
       position: absolute;

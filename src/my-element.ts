@@ -16,28 +16,33 @@ declare global {
 @customElement('my-element')
 export class MyElement extends LitElement {
   static override styles = css`
-    :host {
-      display: block;
-      border: solid 1px gray;
-      padding: 16px;
-      max-width: 800px;
-    }
-
     body {
+      background-color: #53575a;
       display: grid;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      /* color: red; */
     }
 
     h1 {
+      font-family: Arial, sans-serif;
       margin: 0 auto;
       margin-bottom: 2rem;
+      color: #aaa;
     }
 
-    .app {
+    .card {
+      /* background-color: #fff; */
+      margin: 1rem;
+      padding: 1rem;
+      border: solid 1px #53575a;
+      border-radius: 2px;
+    }
+
+    .display {
       display: flex;
-      gap: 2rem;
+      gap: 1rem;
     }
   `;
 
@@ -80,9 +85,9 @@ export class MyElement extends LitElement {
       this.messages && this.messages.length > 0 ? this.messages[0] : undefined;
 
     return html`
-      <div>
+      <div class="card">
         <h1>VOLTMETER</h1>
-        <div class="app">
+        <div class="display">
           <!-- Instantiate the websocket component -->
           <websocket-element
             @message-received="${this.handleMessageReceived}"

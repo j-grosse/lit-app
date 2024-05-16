@@ -35,7 +35,7 @@ private socket: WebSocket | null = null;
       this.messages = JSON.parse(event.data);
       this.dispatchEvent(new CustomEvent('message-received', { detail: this.messages }));
 
-      console.log('Received messages: ', this.messages);
+      console.log('Message sent from server: ', this.messages);
 
       // Update the component to trigger re-rendering
       this.requestUpdate();
