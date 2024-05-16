@@ -2,6 +2,7 @@ import {LitElement, html, css} from 'lit';
 import {customElement} from 'lit/decorators.js';
 import {WebSocketElement} from './websocket-element';
 import {GaugeElement} from './gauge-element';
+import {SelectElement} from './select-element';
 
 declare global {
   interface HTMLElementTagNameMap {
