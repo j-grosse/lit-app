@@ -44,8 +44,8 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify(data));
   };
 
-  const averageValue = 0.5; // Average value
-  const fluctuationRange = 0.3; // Range of fluctuation
+  const averageValue = 100.5; // Average value
+  const fluctuationRange = 50.3; // Range of fluctuation
 
   // Function to generate an array with random values between 0 and 1.00
   const generateFluctuatingArray = (averageValue, fluctuationRange) => {

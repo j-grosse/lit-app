@@ -1,13 +1,14 @@
 import {LitElement, html, css} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement} from 'lit/decorators.js';
 import {WebSocketElement} from './websocket-element';
 import {GaugeElement} from './gauge-element';
 
 declare global {
   interface HTMLElementTagNameMap {
+    'my-element': MyElement;
     'websocket-element': WebSocketElement;
     'gauge-element': GaugeElement;
-    'my-element': MyElement;
+    'select-element': SelectElement;
   }
 }
 
@@ -28,74 +29,78 @@ export class MyElement extends LitElement {
       height: 100vh;
     }
 
-    svg path {
-      will-change: auto;
-      stroke-width: 20px;
-      stroke-miterlimit: round;
-      transition: stroke-dashoffset 850ms ease-in-out;
+    h1 {
+      margin: 0 auto;
+      margin-bottom: 2rem;
+    }
+
+    .app {
+      display: flex;
+      gap: 2rem;
     }
   `;
 
-  @property({type: Array})
-  messages: Number[] = [];
+  messages: number[] = [];
 
-  private socket: WebSocket | null = null;
-
-  override firstUpdated() {
-    this.connectWebSocket();
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener(
+      'message-received' as any,
+      this.handleMessageReceived
+    );
   }
 
-  connectWebSocket() {
-    this.socket = new WebSocket('ws://localhost:3000');
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      'message-received' as any,
+      this.handleMessageReceived
+    );
+  }
 
-    this.socket.onopen = () => {
-      console.log('WebSocket connection established');
-      // Request initial data from the server when the connection is established
-      this.socket?.send('initialData');
-    };
+  handleMessageReceived(event: CustomEvent<number[]>) {
+    this.messages = event.detail;
+    console.log('MESSAGES', this.messages);
+    this.requestUpdate();
+  }
 
-    this.socket.onmessage = (event) => {
-      // change event object data from string to array
-      this.messages = JSON.parse(event.data);
-      console.log(this.messages);
-
-      if (this.messages.length > 0) {
-        const gaugeElement = this.renderRoot.querySelector(
-          'gauge-element'
-        ) as GaugeElement;
-        gaugeElement.gaugeValue = Number(this.messages[0].valueOf());
-      }
-      // Update the component to trigger re-rendering
-      this.requestUpdate();
-    };
-
-    this.socket.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
+  override firstUpdated() {
+    const gaugeElement = this.renderRoot.querySelector(
+      '.gauge'
+    ) as GaugeElement | null;
+    if (gaugeElement) {
+      gaugeElement.gaugeValue = this.messages[0];
+      console.log('GAUGE', this.messages[0]);
+    }
   }
 
   override render() {
-    const gaugeValue = this.messages.length > 0 ? this.messages[0].valueOf() : 0;
+    const gaugeValue =
+      this.messages && this.messages.length > 0 ? this.messages[0] : undefined;
+
     return html`
-      <h1>VOLTMETER</h1>
-      <!-- <websocket-element></websocket-element> -->
-      ${this.messages.map((message) => html`<p>${message}</p>`)}
+      <div>
+        <h1>VOLTMETER</h1>
+        <div class="app">
+          <!-- Instantiate the websocket component -->
+          <websocket-element
+            @message-received="${this.handleMessageReceived}"
+          ></websocket-element>
 
-      <meter
-      value=${this.messages[0]}
-      max="2.0"
-      min="0.0"
-      high=".75"
-      low=".25"
-      optimum="0.5"
-      ></meter>
-      <gauge-element gaugeValue="${gaugeValue}"></gauge-element>
+          <!-- <meter
+            value=${gaugeValue}
+            max="2.0"
+            min="0.0"
+            high=".75"
+            low=".25"
+            optimum="0.5"
+          ></meter> -->
+
+          <gauge-element id="myGauge" .gaugeValue=${gaugeValue}></gauge-element>
+
+          <select-element></select-element>
+        </div>
+      </div>
     `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'my-element': MyElement;
   }
 }

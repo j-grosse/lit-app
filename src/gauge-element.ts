@@ -1,23 +1,17 @@
 import {LitElement, html, css, PropertyValues} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+// import {WebSocketElement} from './websocket-element';
 
 @customElement('gauge-element')
 export class GaugeElement extends LitElement {
-  // @property({type: Array})
-  // gaugeValue: number[] = [];
-
   @property({type: Number})
-  gaugeValue: 0 | number = 0;
+  gaugeValue: number | undefined = 0;
 
   protected override updated(changed: PropertyValues): void {
     if (changed.has('gaugeValue')) {
       this.style.setProperty('--gauge-value', `${this.gaugeValue}deg`);
     }
   }
-  // protected override updated() {
-  //   // Update the CSS variable when gaugeValue changes
-  //   this.style.setProperty('--gauge-value', this.gaugeValue.toString());
-  // }
 
   static override styles = css`
     :host {
@@ -34,8 +28,6 @@ export class GaugeElement extends LitElement {
       background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%),
         conic-gradient(
           orange 0,
-          /* orange 15deg,
-          #ccc 15deg, */
           orange var(--gauge-value),
           #ccc var(--gauge-value),
           #ccc 180deg,
@@ -52,20 +44,6 @@ export class GaugeElement extends LitElement {
       transform: rotate(-90deg);
       width: 100%;
     }
-    /* .gauge .pointer {
-      background: #fff;
-      border: 1px solid #000;
-      border-radius: 5px;
-      bottom: 0;
-      content: '';
-      height: 6px;
-      left: 0;
-      position: absolute;
-      transform: rotate(135deg) translateX(2px) translateY(-6px);
-      transform-origin: 85px 0;
-      width: 20px;
-      z-index: 5;
-    } */
     .gauge .mask::before,
     .gauge .mask::after {
       background-image: radial-gradient(
@@ -106,7 +84,7 @@ export class GaugeElement extends LitElement {
         <div class="arc"></div>
         <div class="pointer"></div>
         <div class="mask"></div>
-        <div class="label">75% (135°)</div>
+        <div class="label">${this.gaugeValue}</div>
       </div>
     `;
   }
