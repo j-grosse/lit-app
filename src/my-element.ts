@@ -17,27 +17,25 @@ declare global {
 export class MyElement extends LitElement {
   static override styles = css`
     body {
-      background-color: #53575a;
-      display: grid;
-      justify-content: center;
-      align-items: center;
+      background-color: #fff;
       height: 100vh;
-      /* color: red; */
     }
 
-    h1 {
+    h2 {
       font-family: Arial, sans-serif;
-      margin: 0 auto;
-      margin-bottom: 2rem;
-      color: #aaa;
+      margin-bottom: 1rem;
+      color: #8693a9;
     }
 
     .card {
-      /* background-color: #fff; */
-      margin: 1rem;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      margin: 1rem auto;
       padding: 1rem;
-      border: solid 1px #53575a;
-      border-radius: 2px;
+      border: solid 1px #aaa;
+      border-radius: 4px;
+      box-shadow: 4px 4px 6px #333;
     }
 
     .display {

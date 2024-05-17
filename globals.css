@@ -1,0 +1,20 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html {
+  font-family: Arial, sans-serif;
+}
+body {
+  background-color: #6C798B;
+  height: 100vh;
+}
+
+.app {
+  display: flex;
+  margin: 1rem;
+}
+
+/* h2 {
+  @apply text-2xl;
+} */

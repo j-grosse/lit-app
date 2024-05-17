@@ -17,8 +17,8 @@ export class SelectElement extends LitElement {
     select {
       padding: 8px;
       font-size: 16px;
-      color: #aaa;
-      border: solid 1px #aaa;
+      color: #8693a9;
+      border: solid 1px #8693a9;
       border-radius: 2px;
     }
 
