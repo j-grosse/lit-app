@@ -30,12 +30,17 @@ private socket: WebSocket | null = null;
       this.socket?.send('initialData');
     };
 
+    // receive message from server
     this.socket.onmessage = (event) => {
-      // change event object data from string to array
       this.messages = JSON.parse(event.data);
-      this.dispatchEvent(new CustomEvent('message-received', { detail: this.messages }));
+      this.dispatchEvent(
+        new CustomEvent('message-received', {detail: this.messages})
+      );
 
-      console.log('Message sent from server: ', this.messages);
+      console.log(
+        'Received message sent from server to client: ',
+        this.messages
+      );
 
       // Update the component to trigger re-rendering
       this.requestUpdate();

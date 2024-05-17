@@ -65,7 +65,15 @@ export class MyElement extends LitElement {
   }
 
   handleMessageReceived(event: CustomEvent<number[]>) {
-    this.messages = event.detail;
+    const [av, absAv, p, pp, rms] = event.detail;
+    // this.messages = event.detail;
+    // populate the array
+    this.messages = [];
+    this.messages.push(av);
+    this.messages.push(absAv);
+    this.messages.push(p);
+    this.messages.push(pp);
+    this.messages.push(rms);
     console.log('MESSAGES', this.messages);
     this.requestUpdate();
   }

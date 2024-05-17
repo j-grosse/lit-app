@@ -34,36 +34,65 @@ const server = http.createServer((req, res) => {
 });
 
 const wss = new WebSocketServer({server});
+const rawValue = 1.0; // Voltage input value
+let scaledValue = rawValue; // scaled average value to display
+let fluctuationRange = scaledValue / 20; // Range of fluctuation
 
 wss.on('connection', (ws) => {
   console.log('WebSocket client connected');
 
-  // Send an array every 100ms
+  // Send data array every 100ms
   const sendData = () => {
-    const data = generateFluctuatingArray(averageValue, fluctuationRange);
+    const data = generateFluctuatingArray(scaledValue, fluctuationRange);
     ws.send(JSON.stringify(data));
   };
 
-  const averageValue = 100.0; // Average value
-  const fluctuationRange = 30.0; // Range of fluctuation
-
-  // Function to generate an array with random values between 0 and 1.00
-  const generateFluctuatingArray = (averageValue, fluctuationRange) => {
+  // Function to generate an array with fluctuating values
+  const generateFluctuatingArray = (scaledValue, fluctuationRange) => {
     const fluctuatingArray = [];
-
+    // Generate random fluctuation and add to scaledValue
     const randomFluctuation =
-      Math.random() * fluctuationRange * 2 - fluctuationRange; // Generate random fluctuation within the specified range
-    const value = parseFloat((averageValue + randomFluctuation).toFixed(2)); // Add random fluctuation average value
-    fluctuatingArray.push(value);
-    // fluctuatingArray.push(value * 2); //PP
+      Math.random() * fluctuationRange * 2 - fluctuationRange;
+    const av = parseFloat((scaledValue + randomFluctuation).toFixed(2));
+
+    // calculate the other values relative to av
+    const absAv = Math.abs(av);
+    const p = Math.pow(av, 2);
+    const pp = Math.abs(av) * 2;
+    const rms = Math.sqrt(Math.pow(av, 2) / 2);
+
+    // create the array with the values to display
+    fluctuatingArray.push(av);
+    fluctuatingArray.push(absAv);
+    fluctuatingArray.push(p);
+    fluctuatingArray.push(pp);
+    fluctuatingArray.push(rms);
 
     return fluctuatingArray;
   };
 
   const interval = setInterval(sendData, 1000);
+  // const interval = setInterval(sendData, 100);
 
+  // when the user changes the range (maxVal) the server calculates the new scaledValue
   ws.on('message', (message) => {
-    console.log('Message sent from client: ', message + '\n');
+    console.log('Message sent from client to server: ', message + '\n');
+    try {
+      let options = {};
+      if (message != 'initialData') {
+        options = JSON.parse(message);
+      }
+      if (options.hasOwnProperty('maxValue')) {
+        const maxValue = parseFloat(options.maxValue);
+        console.log('range changed by user to: ', maxValue);
+        console.log('old scaledValue: ', scaledValue);
+        // calculate the new scaledValue from maxValue and rawValue
+        scaledValue = rawValue / parseFloat(options.maxValue);
+        console.log('new scaledValue:', scaledValue);
+      }
+    } catch (error) {
+      console.error('Error parsing JSON message sent from client:', error);
+    }
   });
 
   ws.on('close', () => {
