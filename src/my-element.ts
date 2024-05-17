@@ -3,6 +3,8 @@ import {customElement} from 'lit/decorators.js';
 import {WebSocketElement} from './websocket-element';
 import {GaugeElement} from './gauge-element';
 import {SelectElement} from './select-element';
+// import {TWStyles} from '../Tailwind/twlit.js';
+// import '../tailwind.css';
 
 declare global {
   interface HTMLElementTagNameMap {
