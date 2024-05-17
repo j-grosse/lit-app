@@ -7,10 +7,10 @@ export class WebSocketElement extends LitElement {
     /* Add your component styles here */
   `;
 
-@property({type: Array})
-messages: number[] = [];
+  @property({type: Array})
+  messages: number[] = [];
 
-private socket: WebSocket | null = null;
+  private socket: WebSocket | null = null;
 
   // override connectedCallback() {
   //   super.connectedCallback();
@@ -20,7 +20,6 @@ private socket: WebSocket | null = null;
   override firstUpdated() {
     this.connectWebSocket();
   }
-  
   connectWebSocket() {
     this.socket = new WebSocket('ws://localhost:3000');
 

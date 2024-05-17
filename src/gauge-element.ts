@@ -1,21 +1,11 @@
 import {LitElement, html, css, PropertyValues} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-// import {WebSocketElement} from './websocket-element';
 
 @customElement('gauge-element')
 export class GaugeElement extends LitElement {
-  @property({type: Number})
-  gaugeValue: number | undefined = 0;
-
-  protected override updated(changed: PropertyValues): void {
-    if (changed.has('gaugeValue')) {
-      this.style.setProperty('--gauge-value', `${this.gaugeValue}deg`);
-    }
-  }
-
   static override styles = css`
     :host {
-      --gauge-value: 0deg; /* Default value */
+      --gauge-value: 0deg;
     }
     .gauge {
       height: 85px;
@@ -24,15 +14,16 @@ export class GaugeElement extends LitElement {
       width: 170px;
     }
     .gauge .arc {
-      background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%), /* inner circle */
-        conic-gradient( /* meter arc */
-          #f09605 0,
-          #f09605 var(--gauge-value),
-          #ddd var(--gauge-value),
-          #ddd 180deg,
-          #fff 180deg,
-          #fff 360deg
-        );
+      background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%),
+        /* inner circle */
+          conic-gradient(
+            #f09605 0,
+            #f09605 var(--gauge-arc-value),
+            #ddd var(--gauge-arc-value),
+            #ddd 180deg,
+            #fff 180deg,
+            #fff 360deg
+          );
       background-position: center center, center center;
       background-repeat: no-repeat;
       background-size: 100% 100%, 100% 100%;
@@ -66,15 +57,38 @@ export class GaugeElement extends LitElement {
       right: -2px;
     }
     .gauge .label {
-      bottom: 20px;
+      bottom: -20px;
       font-family: Arial, sans-serif;
+      color: #8693a9;
       left: 0;
       line-height: 26px;
       position: absolute;
       text-align: center;
       width: 100%;
     }
+    .gauge .label ul {
+      list-style: none;
+      padding: 0;
+    }
+    .gauge .label li {
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    #unit {
+      font-size: 0.5rem;
+    }
   `;
+
+  @property({type: Number})
+  gaugeArcValue: number | undefined;
+  scaledValue: number | undefined;
+  maxValueWithUnit: string = '';
+
+  protected override updated(changed: PropertyValues): void {
+    if (changed.has('gaugeArcValue')) {
+      this.style.setProperty('--gauge-arc-value', `${this.gaugeArcValue}deg`);
+    }
+  }
 
   override render() {
     return html`
@@ -82,7 +96,12 @@ export class GaugeElement extends LitElement {
         <div class="arc"></div>
         <div class="pointer"></div>
         <div class="mask"></div>
-        <div class="label">${this.gaugeValue}</div>
+        <div class="label">
+          <ul>
+            <li>${this.scaledValue}</li>
+            <li id="unit">${this.maxValueWithUnit}</li>
+          </ul>
+        </div>
       </div>
     `;
   }

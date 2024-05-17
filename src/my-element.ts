@@ -47,6 +47,11 @@ export class MyElement extends LitElement {
   `;
 
   messages: number[] = [];
+  rawValue: number = 1.0;
+  maxValue: number = 1.0;
+  maxValueWithUnit: string = '';
+  gaugeAngle: number = 180;
+  gaugeArcValue: number = 180;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -83,36 +88,84 @@ export class MyElement extends LitElement {
       '.gauge'
     ) as GaugeElement | null;
     if (gaugeElement) {
-      gaugeElement.gaugeValue = this.messages[0];
+      gaugeElement.gaugeArcValue = this.messages[0];
       console.log('GAUGE', this.messages[0]);
     }
   }
 
-  override render() {
-    const gaugeValue =
-      this.messages && this.messages.length > 0 ? this.messages[0] : undefined;
+  // updated range value dispatched by select-element component
+  handleMaxValueChange(event: CustomEvent<string>) {
+    const selectedMaxValue = event.detail;
+    console.log('Selected max value:', selectedMaxValue);
+    this.maxValue = parseFloat(selectedMaxValue);
+    this.maxValueWithUnit = selectedMaxValue + 'V';
+  }
+  // let currentValue = this.messages[0];
+  // const maxValue = parseFloat(selectedMaxValue);
+  // const maxAngle = 180;
+  // this.gaugeAngle = currentValue * (maxAngle / maxValue);
+  // // this.gaugeAngle =  (currentValue / maxValue) *  maxAngle;
+  // console.log('GAUGE ANGLE:', this.gaugeAngle);
 
+  setInitialMaxValue(event: CustomEvent<string>) {
+    const initialMaxValue = event.detail;
+    const parsedMaxValue = parseFloat(initialMaxValue);
+    console.log('parsedMaxValue: ', parsedMaxValue);
+    this.maxValueWithUnit = initialMaxValue + 'V';
+
+    if (!isNaN(parsedMaxValue)) {
+      if (this.hasOwnProperty('maxValue')) {
+        this.maxValue = parsedMaxValue;
+      } else {
+        console.warn('maxValue property is undefined');
+      }
+    }
+  }
+
+  handleMaxValueChangeUnit(event: CustomEvent<string>) {
+    this.maxValueWithUnit = event.detail;
+    console.log('UNIT:', event.detail);
+  }
+
+  override render() {
+    const scaledValue =
+      this.messages.length > 0 ? this.messages[0].valueOf() : 0;
+    this.gaugeArcValue = scaledValue * (180 / this.maxValue);
+    this.rawValue = scaledValue * this.maxValue;
+    console.log('raw value: ', this.rawValue + 'V');
     return html`
       <div class="card">
-        <h1>VOLTMETER</h1>
+        <h2>VOLTMETER A</h2>
         <div class="display">
           <!-- Instantiate the websocket component -->
           <websocket-element
             @message-received="${this.handleMessageReceived}"
           ></websocket-element>
 
-          <!-- <meter
-            value=${gaugeValue}
-            max="2.0"
-            min="0.0"
-            high=".75"
-            low=".25"
-            optimum="0.5"
-          ></meter> -->
+          <!-- use the websocket message values to set the gaugeArcValue property in the gauge-element component that changes the gauge arc css variable and thus displays the values -->
 
-          <gauge-element id="myGauge" .gaugeValue=${gaugeValue}></gauge-element>
+          <gauge-element
+            id="myGauge"
+            .gaugeArcValue=${this.gaugeArcValue}
+            .scaledValue=${scaledValue}
+            .maxValueWithUnit=${this.maxValueWithUnit}
+          ></gauge-element>
 
-          <select-element></select-element>
+          <!-- <gauge-element
+            id="myGauge"
+            .gaugeArcValue=${this.gaugeAngle} .scaledValue=${scaledValue}
+          ></gauge-element> -->
+
+          <!--  call handleMaxValueChange() if the user changes the maxValue option in the select-element component -->
+          <select-element
+            @max-value="${this.setInitialMaxValue}"
+            @max-value-changed="${this.handleMaxValueChange}"
+          ></select-element>
+
+          <!-- <select-element
+            @max-value-changed="${this.handleMaxValueChange}"
+            @max-value="${this.setInitialMaxValue}"
+          ></select-element> -->
         </div>
       </div>
     `;
