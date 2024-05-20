@@ -1,21 +1,10 @@
-import {html, css, LitElement} from 'lit';
+import {html, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
 @customElement('websocket-element')
 export class WebSocketElement extends LitElement {
-  static override styles = css`
-    /* Add your component styles here */
-  `;
-
-  @property({type: Array})
-  messages: number[] = [];
-
-  private socket: WebSocket | null = null;
-
-  // override connectedCallback() {
-  //   super.connectedCallback();
-  //   this.connectWebSocket();
-  // }
+  @property({type: Array}) messages: number[] = [];
+  @property({type: Object}) socket: WebSocket | null = null;
 
   override firstUpdated() {
     this.connectWebSocket();
@@ -27,6 +16,7 @@ export class WebSocketElement extends LitElement {
       console.log('WebSocket connection established');
       // Request initial data from the server
       this.socket?.send('initialData');
+      this.socketIsOpen();
     };
 
     // receive message from server
@@ -35,19 +25,22 @@ export class WebSocketElement extends LitElement {
       this.dispatchEvent(
         new CustomEvent('message-received', {detail: this.messages})
       );
-
-      console.log(
-        'Received message sent from server to client: ',
-        this.messages
-      );
-
-      // Update the component to trigger re-rendering
-      this.requestUpdate();
+      console.log('Client received message from server: ', this.messages);
     };
 
     this.socket.onclose = () => {
       console.log('WebSocket connection closed');
     };
+  }
+
+  socketIsOpen() {
+    this.dispatchEvent(
+      new CustomEvent('socket-opened', {
+        detail: {
+          socket: this.socket,
+        },
+      })
+    );
   }
 
   override render() {
