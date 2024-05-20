@@ -62,19 +62,24 @@ export class MyElement extends LitElement {
     }
   `;
 
-  messages: number[] = [];
-  rawValue: number = 1.0;
-  maxValue: number = 1.0;
-  maxValueWithUnit: string = '';
-  gaugeAngle: number = 180;
-  gaugeArcValue: number = 180;
+  // run if a property is changed
+  override updated() {
+    // get the scaled value from the messages array (depending on the selected display mode)
+    this.scaledValue =
+      this.messages.length > 0 ? this.messages[this.displayMode] : 0;
+      console.log('scaledValue: ', this.scaledValue);
+    // calculate the corresponding arc value for the analog display
+    this.gaugeArcValue = this.rawValue * (180 / this.maxValue);
+    console.log('GAUGE ARC VALUE:', this.gaugeArcValue);
+    // calculate the raw, unscaled value (is not transmitted in the websocket messages)
+    this.rawValue = this.scaledValue * this.maxValue;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener(
-      'message-received' as any,
-      this.handleMessageReceived
-    );
+    // only send the maxValue if it has changed
+    if (this.maxValue !== this.prevMaxValue) {
+      this.sendMaxValue();
+    }
+    // store the current maxValue for comparison in the next update
+    this.prevMaxValue = this.maxValue;
   }
 
   override disconnectedCallback() {
@@ -85,57 +90,28 @@ export class MyElement extends LitElement {
     );
   }
 
+  // populate the messages property
   handleMessageReceived(event: CustomEvent<number[]>) {
-    const [av, absAv, p, pp, rms] = event.detail;
-    // this.messages = event.detail;
-    // populate the array
-    this.messages = [];
-    this.messages.push(av);
-    this.messages.push(absAv);
-    this.messages.push(p);
-    this.messages.push(pp);
-    this.messages.push(rms);
-    console.log('MESSAGES', this.messages);
-    this.requestUpdate();
+    this.messages = event.detail;
   }
 
-  override firstUpdated() {
-    const gaugeElement = this.renderRoot.querySelector(
-      '.gauge'
-    ) as GaugeElement | null;
-    if (gaugeElement) {
-      gaugeElement.gaugeArcValue = this.messages[0];
-      console.log('GAUGE', this.messages[0]);
-    }
+  setPowerMode(event: CustomEvent<number>) {
+    this.powerMode = event.detail;
+    console.log('Power mode changed to: ', this.powerMode);
   }
 
-  // updated range value dispatched by select-element component
-  handleMaxValueChange(event: CustomEvent<string>) {
-    const selectedMaxValue = event.detail;
-    console.log('Selected max value:', selectedMaxValue);
-    this.maxValue = parseFloat(selectedMaxValue);
-    this.maxValueWithUnit = selectedMaxValue + 'V';
+  setDisplayMode(event: CustomEvent<number>) {
+    this.displayMode = event.detail;
   }
-  // let currentValue = this.messages[0];
-  // const maxValue = parseFloat(selectedMaxValue);
-  // const maxAngle = 180;
-  // this.gaugeAngle = currentValue * (maxAngle / maxValue);
-  // // this.gaugeAngle =  (currentValue / maxValue) *  maxAngle;
-  // console.log('GAUGE ANGLE:', this.gaugeAngle);
 
-  setInitialMaxValue(event: CustomEvent<string>) {
-    const initialMaxValue = event.detail;
-    const parsedMaxValue = parseFloat(initialMaxValue);
-    console.log('parsedMaxValue: ', parsedMaxValue);
-    this.maxValueWithUnit = initialMaxValue + 'V';
+  // set maxValue (voltmeter range)
+  setMaxValue(event: CustomEvent<number>) {
+    this.maxValue = event.detail;
+  }
 
-    if (!isNaN(parsedMaxValue)) {
-      if (this.hasOwnProperty('maxValue')) {
-        this.maxValue = parsedMaxValue;
-      } else {
-        console.warn('maxValue property is undefined');
-      }
-    }
+  // set maxValueText below gauge
+  setMaxValueText(event: CustomEvent<string>) {
+    this.maxValueText = event.detail;
   }
 
   handleMaxValueChangeUnit(event: CustomEvent<string>) {
@@ -144,14 +120,9 @@ export class MyElement extends LitElement {
   }
 
   override render() {
-    const scaledValue =
-      this.messages.length > 0 ? this.messages[0].valueOf() : 0;
-    this.gaugeArcValue = scaledValue * (180 / this.maxValue);
-    this.rawValue = scaledValue * this.maxValue;
-    console.log('raw value: ', this.rawValue + 'V');
     return html`
       <div class="card">
-        <h2>VOLTMETER A</h2>
+        <p class="heading">VOLTMETER A</p>
         <div class="display">
           <!-- Instantiate the websocket component -->
           <websocket-element
