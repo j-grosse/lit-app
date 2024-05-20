@@ -29,14 +29,15 @@ export class MyElement extends LitElement {
 
   static override styles = css`
     body {
+      font-family: Open Sans, sans-serif;
       background-color: #fff;
       height: 100vh;
     }
 
-    h2 {
-      font-family: Arial, sans-serif;
-      margin-bottom: 1rem;
+    .heading {
+      font-weight: 500;
       color: #8693a9;
+      margin: 1rem;
     }
 
     .card {
