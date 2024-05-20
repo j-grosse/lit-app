@@ -1,10 +1,11 @@
-@import 'tailwindcss/base';
+/* @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import 'tailwindcss/utilities'; */
 
 html {
-  font-family: Arial, sans-serif;
+  font-family: Open Sans, sans-serif;
 }
+
 body {
   background-color: #6C798B;
   height: 100vh;
@@ -14,7 +15,3 @@ body {
   display: flex;
   margin: 1rem;
 }
-
-/* h2 {
-  @apply text-2xl;
-} */
