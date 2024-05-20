@@ -90,23 +90,29 @@ export class DropdownElement extends LitElement {
     }
   `;
 
+override firstUpdated() {
+  document.addEventListener('click', this.handleClickOutside.bind(this));
+}
   // close menu on click outside of menu
-  override connectedCallback() {
-    super.connectedCallback();
-    this.attachShadow({mode: 'open'});
-    document.addEventListener('click', this.handleClickOutside.bind(this));
-  }
+  // override connectedCallback() {
+  //   super.connectedCallback();
+  //   this.attachShadow({mode: 'open'});
+  //   document.addEventListener('click', this.handleClickOutside.bind(this));
+  // }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    document.removeEventListener('click', this.handleClickOutside.bind(this));
-  }
+  // override disconnectedCallback() {
+  //   super.disconnectedCallback();
+  //   document.removeEventListener('click', this.handleClickOutside.bind(this));
+  // }
 
   handleClickOutside = (event: Event) => {
-    const dropdown = this.shadowRoot?.querySelector('.dropdown');
-    const target = event.target as Node;
-    if (dropdown && !dropdown.contains(target)) {
-      this.isDropdownActive = false;
+    const shadowRoot = this.shadowRoot;
+    if (shadowRoot) {
+      const dropdown = shadowRoot.querySelector('.dropdown-menu');
+      const target = event.target as Node;
+      if (dropdown && !dropdown.contains(target)) {
+        this.isDropdownActive = false;
+      }
     }
   };
 
