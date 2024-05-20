@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "dev": "concurrently \"parcel index.html\" \"tailwindcss -i .\\Tailwind\\tailwindlib.css -o .\\Tailwind\\tailwind.css --watch\" \"twlit --output .\\Tailwind\\twlit.js --input .\\Tailwind\\tailwind.css \" ",
+    "dev": "",
     "clean": "rimraf my-element.{d.ts,d.ts.map,js,js.map} test/my-element.{d.ts,d.ts.map,js,js.map} test/my-element_test.{d.ts,d.ts.map,js,js.map}",
     "lint": "npm run lint:lit-analyzer && npm run lint:eslint",
     "lint:eslint": "eslint 'src/**/*.ts'",

@@ -63,15 +63,19 @@ export class MyElement extends LitElement {
     }
   `;
 
+override firstUpdated() {
+  
+  }
+
   // run if a property is changed
   override updated() {
     // get the scaled value from the messages array (depending on the selected display mode)
     this.scaledValue =
       this.messages.length > 0 ? this.messages[this.displayMode] : 0;
-      console.log('scaledValue: ', this.scaledValue);
+      // console.log('scaledValue: ', this.scaledValue);
     // calculate the corresponding arc value for the analog display
     this.gaugeArcValue = this.rawValue * (180 / this.maxValue);
-    console.log('GAUGE ARC VALUE:', this.gaugeArcValue);
+    // console.log('gauge arc value:', this.gaugeArcValue);
     // calculate the raw, unscaled value (is not transmitted in the websocket messages)
     this.rawValue = this.scaledValue * this.maxValue;
 
@@ -94,7 +98,7 @@ export class MyElement extends LitElement {
 
   setPowerMode(event: CustomEvent<number>) {
     this.powerMode = event.detail;
-    console.log('Power mode changed to: ', this.powerMode);
+    console.log('selected option value ', this.powerMode);
   }
 
   setDisplayMode(event: CustomEvent<number>) {

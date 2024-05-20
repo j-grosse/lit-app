@@ -116,7 +116,7 @@ export class DropdownElement extends LitElement {
   }
 
   handleOptionClick(item: string, option: number) {
-    console.log('SELECTED option value', option);
+    console.log('selected option value', option);
     // update button text
     this.selectedOptionValue = option;
     this.selectedOptionText = item;
