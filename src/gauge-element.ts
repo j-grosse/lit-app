@@ -3,24 +3,31 @@ import {customElement, property} from 'lit/decorators.js';
 
 @customElement('gauge-element')
 export class GaugeElement extends LitElement {
+  @property({type: Number}) gaugeArcValue = 180;
+  @property({type: Number}) rawValue = 1.00;
+  @property({type: Number}) scaledValue = 1.00;
+  @property({type: String}) maxValueText = '';
+
   static override styles = css`
-    :host {
-      --gauge-value: 0deg;
+    body {
+      font-family: Open Sans, sans-serif;
     }
+
     .gauge {
       height: 85px;
+      width: 170px;
       overflow: hidden;
       position: relative;
-      width: 170px;
     }
+
     .gauge .arc {
       background-image: radial-gradient(#fff 0, #fff 60%, transparent 60%),
         /* inner circle */
           conic-gradient(
             #f09605 0,
             #f09605 var(--gauge-arc-value),
-            #ddd var(--gauge-arc-value),
-            #ddd 180deg,
+            #e1e8f9 var(--gauge-arc-value),
+            #e1e8f9 180deg,
             #fff 180deg,
             #fff 360deg
           );
@@ -34,6 +41,7 @@ export class GaugeElement extends LitElement {
       transform: rotate(-90deg);
       width: 100%;
     }
+
     .gauge .mask::before,
     .gauge .mask::after {
       background-image: radial-gradient(
@@ -48,17 +56,19 @@ export class GaugeElement extends LitElement {
       position: absolute;
       width: 18px;
     }
+
     .gauge .mask::before {
       left: -2px;
       bottom: 0;
     }
+
     .gauge .mask::after {
       bottom: 0;
       right: -2px;
     }
+
     .gauge .label {
       bottom: -20px;
-      font-family: Arial, sans-serif;
       color: #8693a9;
       left: 0;
       line-height: 26px;
@@ -66,23 +76,21 @@ export class GaugeElement extends LitElement {
       text-align: center;
       width: 100%;
     }
+
     .gauge .label ul {
       list-style: none;
       padding: 0;
     }
+
     .gauge .label li {
       text-align: center;
       font-size: 1.5rem;
     }
+
     #unit {
       font-size: 0.5rem;
     }
   `;
-
-  @property({type: Number})
-  gaugeArcValue: number | undefined;
-  scaledValue: number | undefined;
-  maxValueWithUnit: string = '';
 
   protected override updated(changed: PropertyValues): void {
     if (changed.has('gaugeArcValue')) {
@@ -98,8 +106,8 @@ export class GaugeElement extends LitElement {
         <div class="mask"></div>
         <div class="label">
           <ul>
-            <li>${this.scaledValue}</li>
-            <li id="unit">${this.maxValueWithUnit}</li>
+            <li>${this.rawValue.toFixed(2)}</li>
+            <li id="unit">${this.maxValueText}</li>
           </ul>
         </div>
       </div>
