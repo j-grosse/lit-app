@@ -34,26 +34,28 @@ const server = http.createServer((req, res) => {
 });
 
 const wss = new WebSocketServer({server});
-const rawValue = 1.0; // Voltage input value
-let scaledValue = rawValue; // scaled average value to display
-let fluctuationRange = scaledValue / 20; // Range of fluctuation
+const rawValue = 1.00; // fictional voltage input value from hardware
+let scaledValue = 1.00; // scaled value for gauge display
+let fluctuationRange = scaledValue / 20; // range of fluctuation
 
 wss.on('connection', (ws) => {
   console.log('WebSocket client connected');
 
-  // Send data array every 100ms
+  // send websocket data array every 100ms
   const sendData = () => {
     const data = generateFluctuatingArray(scaledValue, fluctuationRange);
     ws.send(JSON.stringify(data));
   };
 
-  // Function to generate an array with fluctuating values
+  const interval = setInterval(sendData, 100);
+
+  // generate array with fluctuating values
   const generateFluctuatingArray = (scaledValue, fluctuationRange) => {
     const fluctuatingArray = [];
-    // Generate random fluctuation and add to scaledValue
+    // generate random fluctuation and add to scaledValue
     const randomFluctuation =
       Math.random() * fluctuationRange * 2 - fluctuationRange;
-    const av = parseFloat((scaledValue + randomFluctuation).toFixed(2));
+    const av = parseFloat(scaledValue + randomFluctuation);
 
     // calculate the other values relative to av
     const absAv = Math.abs(av);
@@ -62,32 +64,29 @@ wss.on('connection', (ws) => {
     const rms = Math.sqrt(Math.pow(av, 2) / 2);
 
     // create the array with the values to display
-    fluctuatingArray.push(av);
-    fluctuatingArray.push(absAv);
-    fluctuatingArray.push(p);
-    fluctuatingArray.push(pp);
-    fluctuatingArray.push(rms);
+    fluctuatingArray.push(av, absAv, p, pp, rms);
 
     return fluctuatingArray;
   };
 
-  const interval = setInterval(sendData, 1000);
-  // const interval = setInterval(sendData, 100);
-
-  // when the user changes the range (maxVal) the server calculates the new scaledValue
+  // calculates the new scaledValue when the user changes the voltmeter range (maxVal)
   ws.on('message', (message) => {
     console.log('Message sent from client to server: ', message + '\n');
     try {
-      let options = {};
+      let data = {};
       if (message != 'initialData') {
-        options = JSON.parse(message);
+        data = JSON.parse(message);
       }
-      if (options.hasOwnProperty('maxValue')) {
-        const maxValue = parseFloat(options.maxValue);
-        console.log('range changed by user to: ', maxValue);
-        console.log('old scaledValue: ', scaledValue);
-        // calculate the new scaledValue from maxValue and rawValue
-        scaledValue = rawValue / parseFloat(options.maxValue);
+      if (data.hasOwnProperty('option')) {
+        if (typeof data.option === 'number') {
+          const maxValue = Number(data.option);
+          console.log('range changed by user to: ', maxValue);
+          console.log('old scaledValue: ', scaledValue);
+          // calculate the new scaledValue from maxValue and rawValue
+          scaledValue = Number((rawValue / maxValue).toFixed(2));
+          // update fluctuationRange
+          fluctuationRange = Number((scaledValue / 20).toFixed(2));
+        }
         console.log('new scaledValue:', scaledValue);
       }
     } catch (error) {
@@ -102,5 +101,5 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(3000, () => {
-  console.log('Server running at http://localhost:3000/');
+  console.log('Server running at http://localhost:3000');
 });
