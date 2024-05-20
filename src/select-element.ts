@@ -15,10 +15,11 @@ export class SelectElement extends LitElement {
     }
 
     select {
+      font-family: Open Sans, sans-serif;
       padding: 8px;
       font-size: 16px;
       color: #8693a9;
-      border: solid 1px #8693a9;
+      border: solid 1px #E1E8F9;
       border-radius: 2px;
     }
 
@@ -32,7 +33,7 @@ export class SelectElement extends LitElement {
 
     select option:checked {
       background-color: #f0f0f0;
-      color: #000;
+      color: #aaa;
     }
   `;
 
