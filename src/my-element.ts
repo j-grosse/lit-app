@@ -1,22 +1,32 @@
 import {LitElement, html, css} from 'lit';
-import {customElement} from 'lit/decorators.js';
+import {customElement, property} from 'lit/decorators.js';
 import {WebSocketElement} from './websocket-element';
 import {GaugeElement} from './gauge-element';
-import {SelectElement} from './select-element';
-// import {TWStyles} from '../Tailwind/twlit.js';
-// import '../tailwind.css';
+import {DropdownElement} from './dropdown-element';
 
 declare global {
   interface HTMLElementTagNameMap {
     'my-element': MyElement;
     'websocket-element': WebSocketElement;
     'gauge-element': GaugeElement;
-    'select-element': SelectElement;
+    'dropdown-element': DropdownElement;
   }
 }
 
 @customElement('my-element')
 export class MyElement extends LitElement {
+  @property({type: Object}) socket: WebSocket | null = null;
+  @property({type: Array}) messages: number[] = [];
+  @property({type: Number}) rawValue = 1.00; // calculated from scaledValue and maxValue
+  @property({type: Number}) scaledValue = 1.00; // value from messages array
+  @property({type: Number}) gaugeArcValue = 180;
+
+  @property({type: Number}) powerMode = 0;
+  @property({type: Number}) displayMode = 0;
+  @property({type: Number}) prevMaxValue = 1.00;
+  @property({type: Number}) maxValue = 1.00;
+  @property({type: String}) maxValueText = '1V'; // text to show in 2nd row below gauge
+
   static override styles = css`
     body {
       background-color: #fff;
@@ -43,6 +53,12 @@ export class MyElement extends LitElement {
     .display {
       display: flex;
       gap: 1rem;
+    }
+
+    .dropdown-menus {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
   `;
 
@@ -147,25 +163,34 @@ export class MyElement extends LitElement {
           <gauge-element
             id="myGauge"
             .gaugeArcValue=${this.gaugeArcValue}
-            .scaledValue=${scaledValue}
-            .maxValueWithUnit=${this.maxValueWithUnit}
+            .rawValue=${this.rawValue}
+            .scaledValue=${this.scaledValue}
+            .maxValueText=${this.maxValueText}
           ></gauge-element>
 
-          <!-- <gauge-element
-            id="myGauge"
-            .gaugeArcValue=${this.gaugeAngle} .scaledValue=${scaledValue}
-          ></gauge-element> -->
+          <div class="dropdown-menus">
+            <dropdown-element
+              .selectedOptionText=${'DC'}
+              .options=${['DC', 'AC']}
+              .optionValues=${[0, 1]}
+              @selected-option-value="${this.setPowerMode}"
+            ></dropdown-element>
 
-          <!--  call handleMaxValueChange() if the user changes the maxValue option in the select-element component -->
-          <select-element
-            @max-value="${this.setInitialMaxValue}"
-            @max-value-changed="${this.handleMaxValueChange}"
-          ></select-element>
+            <dropdown-element
+              .selectedOptionText=${'AV'}
+              .options=${['AV', '|AV|', 'P', 'PP', 'RMS']}
+              .optionValues=${[0, 1, 2, 3, 4]}
+              @selected-option-value="${this.setDisplayMode}"
+            ></dropdown-element>
 
-          <!-- <select-element
-            @max-value-changed="${this.handleMaxValueChange}"
-            @max-value="${this.setInitialMaxValue}"
-          ></select-element> -->
+            <dropdown-element
+              .selectedOptionText=${'1V'}
+              .options=${['100mV', '200mV', '500mV', '1V', '2V', '10V']}
+              .optionValues=${[0.1, 0.2, 0.5, 1, 2, 10]}
+              @selected-option-value="${this.setMaxValue}"
+              @selected-option-text="${this.setMaxValueText}"
+            ></dropdown-element>
+          </div>
         </div>
       </div>
     `;
