@@ -83,12 +83,8 @@ export class MyElement extends LitElement {
     this.prevMaxValue = this.maxValue;
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener(
-      'message-received' as any,
-      this.handleMessageReceived
-    );
+  handleSocketOpened(event: CustomEvent<{socket: WebSocket}>) {
+    this.socket = event.detail.socket;
   }
 
   // populate the messages property
@@ -115,23 +111,34 @@ export class MyElement extends LitElement {
     this.maxValueText = event.detail;
   }
 
-  handleMaxValueChangeUnit(event: CustomEvent<string>) {
-    this.maxValueWithUnit = event.detail;
-    console.log('UNIT:', event.detail);
+  // send maxValue to the server to scale the messages in relation to the selected range
+  sendMaxValue() {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      const option = {
+        option: this.maxValue,
+      };
+
+      try {
+        this.socket.send(JSON.stringify(option));
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
+    } else {
+      console.log(`Socket is not open, readyState: ${this.socket?.readyState}`);
+    }
   }
 
   override render() {
     return html`
+      <!-- allow receiving and sending websocket messages -->
+      <websocket-element
+        @message-received="${this.handleMessageReceived}"
+        @socket-opened="${this.handleSocketOpened}"
+      ></websocket-element>
+
       <div class="card">
         <p class="heading">VOLTMETER A</p>
         <div class="display">
-          <!-- Instantiate the websocket component -->
-          <websocket-element
-            @message-received="${this.handleMessageReceived}"
-          ></websocket-element>
-
-          <!-- use the websocket message values to set the gaugeArcValue property in the gauge-element component that changes the gauge arc css variable and thus displays the values -->
-
           <gauge-element
             id="myGauge"
             .gaugeArcValue=${this.gaugeArcValue}
