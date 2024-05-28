@@ -1,6 +1,10 @@
 # About
 
 This app is a Voltmeter web component made with LitElement. It uses the ws Websocket library and is styled with Tailwindcss
+   
+![image.png](lit_voltmeter.png)
+   
+
 It is using the LitElement TypeScript starter template from the `lit-starter-ts` package in [the main Lit
 repo](https://github.com/lit/lit).
 
