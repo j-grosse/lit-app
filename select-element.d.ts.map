@@ -1,1 +1,0 @@
-{"version":3,"file":"select-element.d.ts","sourceRoot":"","sources":["src/select-element.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,UAAU,EAAY,MAAM,KAAK,CAAC;AAG1C,qBACa,aAAc,SAAQ,UAAU;IACjB,aAAa,SAAM;IACnB,wBAAwB,SAAM;IAC9B,gBAAgB,SAAM;IAEhD,OAAgB,MAAM,0BA4BpB;IAEO,YAAY;IAUrB,kBAAkB,CAAC,KAAK,EAAE,KAAK;IAkB/B,mBAAmB;IAaV,MAAM;CA8BhB"}
