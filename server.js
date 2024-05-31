@@ -14,7 +14,7 @@ const server = http.createServer((req, res) => {
       <h1>WebSocket Test</h1>
       <p>Open your browser's developer tools to see the WebSocket messages.</p>
       <script>
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket('ws://localhost:8000');
 
         socket.onopen = () => {
           console.log('WebSocket test connection established');
@@ -100,6 +100,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
+server.listen(8000, () => {
+  console.log('Server running at http://localhost:8000');
 });

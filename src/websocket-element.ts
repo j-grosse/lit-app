@@ -10,7 +10,7 @@ export class WebSocketElement extends LitElement {
     this.connectWebSocket();
   }
   connectWebSocket() {
-    this.socket = new WebSocket('ws://localhost:3000');
+    this.socket = new WebSocket('ws://localhost:8000');
 
     this.socket.onopen = () => {
       console.log('WebSocket connection established');
