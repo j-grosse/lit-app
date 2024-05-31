@@ -1,6 +1,6 @@
 import http from 'http';
 import {WebSocketServer} from 'ws';
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 10000;
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -102,5 +102,5 @@ wss.on('connection', (ws) => {
 });
 
 server.listen(port, () => {
-  console.log('Server running at http://localhost:8000');
+  console.log('Server running at http://localhost:' + port);
 });

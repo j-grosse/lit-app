@@ -72,7 +72,7 @@ export class SelectElement extends LitElement {
       maxValue: this.selectedMaxValue,
     };
 
-    const socket = new WebSocket('ws://localhost:8000');
+    const socket = new WebSocket('ws://localhost:10000');
     socket.onopen = () => {
       socket.send(JSON.stringify(options));
     };
