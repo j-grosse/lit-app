@@ -1,1 +1,0 @@
-{"version":3,"file":"gauge-element.d.ts","sourceRoot":"","sources":["src/gauge-element.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,UAAU,EAAa,cAAc,EAAC,MAAM,KAAK,CAAC;AAG1D,qBACa,YAAa,SAAQ,UAAU;IAChB,aAAa,SAAO;IACpB,QAAQ,SAAQ;IAChB,WAAW,SAAQ;IACnB,YAAY,SAAM;IAE5C,OAAgB,MAAM,0BAkFpB;cAEiB,OAAO,CAAC,OAAO,EAAE,cAAc,GAAG,IAAI;IAMhD,MAAM;CAehB"}
